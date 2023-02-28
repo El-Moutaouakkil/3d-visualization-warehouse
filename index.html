@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cube</title>
+    </head>
+    <style>
+        body {
+            margin: 0;
+        }
+        
+        #dv_deposit {
+            border : 1px dashed crimson;
+            width: 400px;
+            height: 400px;
+        }
+        #cube_data {
+            position: absolute;
+            top: 1rem;
+            right: 10rem;
+            font-family: sans-serif;
+            font-size: 0.8rem;
+            line-height: 1rem;
+            color : black;
+            background-color: darkcyan ;
+            padding : .5rem 1rem;
+            border-radius: .2rem;
+            width: 200px;
+            
+        }
+    </style>
+    <body>
+        <div id="dv_deposit" >
+        </div>
+        <!-- <div id="cube_data"></div> -->
+
+        <script src="vendor/faker.js"></script>
+        <script src="vendor/stats.min.js"></script>
+        <script src="vendor/dat.gui.min.js"></script>
+        <script src="vendor/jquery.min.js"></script>
+        <script src="vendor/three.min.js"></script>
+        <script src="vendor/OrbitControls.js"></script>
+        <script src="vendor/CSS3DRenderer.js"></script>
+        <!-- <script src="js/Deposit_formation.js"></script> -->
+        <!-- <script src="js/supermarket3d.js"></script> -->
+        <script src="js/utils.js"></script>
+        <script src="js/supermarket3d.js"></script>
+        <script>
+            $(document).ready(function () {
+                // $().Deposit('init', '#dv_deposit');
+                // $().Deposit('createCubes', 10);
+
+                $("#dv_deposit").supermarket3d();
+            });
+        </script>
+    </body>
+</html>
