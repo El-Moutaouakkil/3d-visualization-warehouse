@@ -5,22 +5,34 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
 (function ($) {
     // console.log("hello world");
     // Define the plugin name and default options
-    const defaults = {};
+    const defaults = {
+        sceneWidth: window.innerWidth,
+        sceneHeight: window.innerHeight,
+    };
 
+    eventHandlers = {
+        adjustSceneSize: function (renderer, camera) {
+            const currentSceneWidth = window.innerWidth;
+            const currentSceneHeight = window.innerHeight;
+            camera.aspect = currentSceneWidth / currentSceneHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(currentSceneWidth, currentSceneHeight);
+        },
+    };
     const methods = {
         initScene: function () {
             //initialization
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(
                 75,
-                window.innerWidth / window.innerHeight,
+                defaults.sceneWidth / defaults.sceneHeight,
                 0.1,
                 1000
             );
 
             const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor("white");
+            renderer.setSize(defaults.sceneWidth, defaults.sceneHeight);
+            // renderer.setClearColor("#e3e3e3");
             this.append(renderer.domElement); //add the renderer to the jquery object calling this function
 
             return { scene, camera, renderer };
@@ -28,14 +40,14 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
         createBlock: function (aisleAddress, shelfAddress, cubeAddress) {
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             const material = new THREE.MeshBasicMaterial({
-                color: "darkblue",
+                color: "crimson",
                 wireframe: true,
             });
             const block = new THREE.Mesh(geometry, material);
             // assign an address to the cube
             const { userData } = block;
             userData.address = `A${aisleAddress}L${shelfAddress}B${cubeAddress}`;
-            console.log({ userData });
+            // console.log({ userData });
 
             userData.product = getFakeProduct();
 
@@ -61,7 +73,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
                 block.position.x = i - numBlocks / 2;
                 block.position.y = yPos;
                 block.position.z = zPos;
-                block.material.color.set(shelfColor);
+                // block.material.color.set(shelfColor);
                 level.add(block);
             }
             const { userData } = level;
@@ -94,7 +106,6 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             return aisle;
         },
         createMultipleAisles: function (
-            scene,
             numAisles,
             numLevels,
             numBlocksPerLevel,
@@ -105,7 +116,6 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             for (let i = 0; i < numAisles; i++) {
                 const zPos = i * aisleZSpacing;
                 const aisle = methods.createAisle(
-                    scene,
                     numLevels,
                     numBlocksPerLevel,
                     aisleSpacing,
@@ -114,22 +124,21 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
                 // aisle.position.set(i,-1,0);
                 supermarket.add(aisle);
             }
+            supermarket.userData.numAisles = numAisles;
             return supermarket;
         },
     };
 
     $.fn.supermarket3d = function () {
-        
+        // init the scene
         const $this = $(this);
         const { scene, camera, renderer } = methods.initScene.call($this);
 
-        
-        const aisle = methods.createAisle( 5, 10, 1, 0, 1);
-        scene.add(aisle);
-        scene.rotation.set(0,0,0)
+        // const supermarket = methods.createMultipleAisles(5, 4, 10, 1, 1.5);
+        // scene.add(supermarket);
 
-        
-
+        camera.position.z = 4;
+        scene.add(camera);
         // Find the cube with address "A0L0B0"
         let block;
         scene.traverse((child) => {
@@ -137,13 +146,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
                 block = child;
             }
         });
-        
 
-        /*  */
-        // cube.rotation.x += 0.4;
-        // cube.rotation.y += 0.4;
-
-        camera.position.z = 8;
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
         // Rendering the scene
@@ -152,5 +155,10 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             renderer.render(scene, camera);
         }
         animate();
+
+        // Event listeners
+        $(window).on("resize", () => {
+            eventHandlers.adjustSceneSize(renderer, camera);
+        });
     };
 })(jQuery);
