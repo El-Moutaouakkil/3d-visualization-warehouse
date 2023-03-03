@@ -32,16 +32,17 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
 
             const renderer = new THREE.WebGLRenderer();
             renderer.setSize(defaults.sceneWidth, defaults.sceneHeight);
-            // renderer.setClearColor("#e3e3e3");
+            renderer.setPixelRatio(2);
+            renderer.setClearColor("#e3e3e3");
             this.append(renderer.domElement); //add the renderer to the jquery object calling this function
 
             return { scene, camera, renderer };
         },
         createBlock: function (aisleAddress, levelAddress, blockAddress) {
-            const geometry = new THREE.BoxGeometry(1, 1, 1);
-            const material = new THREE.MeshBasicMaterial({
+            const geometry = new THREE.BoxGeometry(1, 1, 0.3);
+            const material = new THREE.MeshPhongMaterial({
                 color: "crimson",
-                wireframe: true,
+                // wireframe: true,
             });
             const block = new THREE.Mesh(geometry, material);
             // assign an address to the block
@@ -52,7 +53,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             userData.product = getFakeProduct();
 
             return block;
-        }, 
+        },
         createLevel: function (
             numBlocks,
             yPos,
@@ -60,7 +61,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             aisleAddress,
             levelAddress
         ) {
-            const colors = ["crimson", "green", "blue", ""];
+            const colors = ["crimson", "darkgreen", "lightblue",];
             const levelColor =
                 colors[Math.floor(Math.random() * colors.length)];
             const level = new THREE.Group();
@@ -73,7 +74,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
                 block.position.x = i - numBlocks / 2;
                 block.position.y = yPos;
                 block.position.z = zPos;
-                // block.material.color.set(levelColor);
+                block.material.color.set(levelColor);
                 level.add(block);
             }
             const { userData } = level;
@@ -127,6 +128,28 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             supermarket.userData.numAisles = numAisles;
             return supermarket;
         },
+        getLights: function () {
+            const lights = new THREE.Group();
+            const light = new THREE.PointLight("white", 1, 100);
+            light.position.set(0.4, -10, 20);
+            lights.add(light);
+
+            // create another point light ad set its position to the right of the scene
+            const light2 = new THREE.PointLight("white", 1, 100);
+            light2.position.set(10, 10, 10);
+            lights.add(light2);
+
+            // add another point light to view the left side of the supermaret
+            const light3 = new THREE.PointLight("white", 1, 100);
+            light3.position.set(-10, 10, 0);
+            lights.add(light3);
+
+            const light4 = new THREE.PointLight("white", 1, 100);
+            light4.position.set(0, 0, -10);
+            lights.add(light4);
+
+            return lights;
+        },
     };
 
     $.fn.supermarket3d = function () {
@@ -134,10 +157,21 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
         const $this = $(this);
         const { scene, camera, renderer } = methods.initScene.call($this);
 
-        // const supermarket = methods.createMultipleAisles(5, 4, 10, 1, 1.5);
-        // scene.add(supermarket);
+        const supermarket = methods.createMultipleAisles(5, 6, 20, 1, 1.3);
+        // supermarket.position.x=-7;
+        supermarket.position.y = 2;
+        supermarket.rotation.set(0.4, 0.4, 0);
+        scene.add(supermarket);
 
-        camera.position.z = 4;
+        /* START */
+
+        /* END */
+
+        const lights = methods.getLights();
+        scene.add(lights);
+
+        camera.position.z = 20;
+        // camera.position.set(0, 0, 5);
         scene.add(camera);
         // Find the block with address "A0L0B0"
         let block;
