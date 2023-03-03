@@ -37,22 +37,22 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
 
             return { scene, camera, renderer };
         },
-        createBlock: function (aisleAddress, shelfAddress, cubeAddress) {
+        createBlock: function (aisleAddress, levelAddress, blockAddress) {
             const geometry = new THREE.BoxGeometry(1, 1, 1);
             const material = new THREE.MeshBasicMaterial({
                 color: "crimson",
                 wireframe: true,
             });
             const block = new THREE.Mesh(geometry, material);
-            // assign an address to the cube
+            // assign an address to the block
             const { userData } = block;
-            userData.address = `A${aisleAddress}L${shelfAddress}B${cubeAddress}`;
+            userData.address = `A${aisleAddress}L${levelAddress}B${blockAddress}`;
             // console.log({ userData });
 
             userData.product = getFakeProduct();
 
             return block;
-        }, //todo add address to cube
+        }, 
         createLevel: function (
             numBlocks,
             yPos,
@@ -61,7 +61,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             levelAddress
         ) {
             const colors = ["crimson", "green", "blue", ""];
-            const shelfColor =
+            const levelColor =
                 colors[Math.floor(Math.random() * colors.length)];
             const level = new THREE.Group();
             for (let i = 0; i < numBlocks; i++) {
@@ -73,7 +73,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
                 block.position.x = i - numBlocks / 2;
                 block.position.y = yPos;
                 block.position.z = zPos;
-                // block.material.color.set(shelfColor);
+                // block.material.color.set(levelColor);
                 level.add(block);
             }
             const { userData } = level;
@@ -139,7 +139,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
 
         camera.position.z = 4;
         scene.add(camera);
-        // Find the cube with address "A0L0B0"
+        // Find the block with address "A0L0B0"
         let block;
         scene.traverse((child) => {
             if (child.userData.address === "A0L0B0") {
