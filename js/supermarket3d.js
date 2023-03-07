@@ -128,7 +128,7 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
             supermarket.userData.numAisles = numAisles;
             return supermarket;
         },
-        getLights: function () {
+        createLights: function () {
             const lights = new THREE.Group();
             const light = new THREE.PointLight("white", 1, 100);
             light.position.set(0.4, -10, 20);
@@ -157,20 +157,20 @@ calling this plugin on a jquery object will create a 3d supermarket scene with t
         const $this = $(this);
         const { scene, camera, renderer } = methods.initScene.call($this);
 
-        const supermarket = methods.createMultipleAisles(5, 6, 20, 1, 1.3);
+        const supermarket = methods.createMultipleAisles(8, 6, 20, 1, 1.3);
         // supermarket.position.x=-7;
         supermarket.position.y = 2;
-        supermarket.rotation.set(0.4, 0.4, 0);
+        supermarket.rotation.set(0.5, 0.7, 0);
         scene.add(supermarket);
 
         /* START */
 
         /* END */
 
-        const lights = methods.getLights();
+        const lights = methods.createLights();
         scene.add(lights);
 
-        camera.position.z = 20;
+        camera.position.z = 23;
         // camera.position.set(0, 0, 5);
         scene.add(camera);
         // Find the block with address "A0L0B0"
